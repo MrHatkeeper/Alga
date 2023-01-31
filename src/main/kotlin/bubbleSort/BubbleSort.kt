@@ -1,4 +1,4 @@
-package core.alga.bubbleSort
+package bubbleSort
 
 class BubbleSort {
     fun bubbleSort(input: List<Int>): List<Int> {
