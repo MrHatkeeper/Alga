@@ -1,5 +1,15 @@
 package bubbleSort
 
+
+fun main(){
+    val input = (1..10).toList().shuffled()
+    val algo = BubbleSort()
+    println(algo.bubbleSort(input))
+
+}
+
+
+
 class BubbleSort {
     fun bubbleSort(input: List<Int>): List<Int> {
         val output = input.toMutableList()
@@ -21,3 +31,4 @@ class BubbleSort {
         return output
     }
 }
+
