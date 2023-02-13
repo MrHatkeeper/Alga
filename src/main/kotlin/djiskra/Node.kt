@@ -1,3 +1,3 @@
 package djiskra
 
-class Node(name: String, type: String, shortestPathLength:Int = 100)
+class Node(val name: String, val type: String, visitedAsSmallest: Boolean = false, var shortestPathLength: Int = Int.MAX_VALUE)

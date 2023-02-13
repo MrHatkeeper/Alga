@@ -1,3 +1,3 @@
 package djiskra
 
-class Path(from:Node, to: Node, length: Int)
+class Path(val from:Node,val  to: Node,val  length: Int)
