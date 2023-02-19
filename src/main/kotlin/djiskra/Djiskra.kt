@@ -2,6 +2,12 @@ package djiskra
 
 
 fun main() {
+    val graph = generateGraph().toMutableList()
+
+    printGraph(evalNodes(graph))
+}
+
+fun generateGraph(): List<Path> {
     val nodes = mutableListOf<Node>()
     nodes.add(Node("0", "s", shortestPathLength = 0))
 
@@ -9,18 +15,51 @@ fun main() {
     for (i in 1..lengthOfMap) {
         nodes.add(Node(i.toString(), "p"))
     }
-    nodes.add(Node((lengthOfMap + 1).toString(), "f"))
     val graph = mutableListOf<Path>()
     for (i in 0..nodes.size - 2) {
-        graph.add(Path(nodes[i], nodes[i + 1], i + 1))
+        graph.add(Path(nodes[i], nodes[(0 until nodes.size - 1).random()], (1 until 10).random()))
     }
+    val finish = Node((lengthOfMap + 1).toString(), "f")
+    graph.add(Path(graph.last().from, finish, 1))
 
-
-
-
-    findShortestPath(graph)
+    return graph
 }
 
+fun evalNodes(graph: MutableList<Path>): List<Path> {
+    while (!wasEverythingVisited(graph)) {
+        for (path in graph) {
+            path.from.visitedAsSmallest = true
+            val neighbors = findNeighbors(path, graph)
+            if (path.from.shortestPathLength != Int.MAX_VALUE) {
+                for (neighbor in neighbors) {
+                    if (neighbor.length + neighbor.from.shortestPathLength < neighbor.to.shortestPathLength) {
+                        neighbor.to.shortestPathLength = neighbor.length + neighbor.from.shortestPathLength
+                    }
+                }
+            }
+        }
+    }
+    return graph
+}
+
+fun findNeighbors(searchingForPath: Path, paths: List<Path>): List<Path> {
+    val output = mutableListOf<Path>()
+    for (i in paths) {
+        if (searchingForPath.from == i.from) {
+            output.add(i)
+        }
+    }
+    return output
+}
+
+fun wasEverythingVisited(graph: List<Path>): Boolean {
+    for (i in graph) {
+        if (!i.from.visitedAsSmallest) {
+            return false
+        }
+    }
+    return true
+}
 
 fun printGraph(graph: List<Path>) {
     for (i in graph) {
@@ -28,34 +67,3 @@ fun printGraph(graph: List<Path>) {
     }
 }
 
-
-fun findShortestPath(graph: List<Path>) {
-    val output = editValueOfPathToNeighbor(graph[0].from, graph)
-    printGraph(output)
-}
-
-fun findNeighbors(node: Node, graph: List<Path>): List<String> {
-    val output = mutableListOf<String>()
-    for (i in graph) {
-        if (i.from.name == node.name) output.add(i.to.name)
-    }
-    return output
-}
-
-fun editValueOfPathToNeighbor(node: Node, graph: List<Path>): List<Path> {
-    val neighborsName = findNeighbors(node, graph)
-    val output = mutableListOf<Path>()
-    for (path in graph) {
-        if (path.from.name == node.name && path.to.name in neighborsName) {
-            if (node.shortestPathLength + path.length < path.to.shortestPathLength) {
-                val editedPath = Path(
-                    path.from,
-                    Node(path.to.name, path.to.type, false, (node.shortestPathLength + path.length)),
-                    path.length
-                )
-                output.add(editedPath)
-            }
-        } else output.add(path)
-    }
-    return output
-}
