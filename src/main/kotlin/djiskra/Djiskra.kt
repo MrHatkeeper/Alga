@@ -2,10 +2,21 @@ package djiskra
 
 
 fun main() {
-    val graph = generateGraph().toMutableList()
+    val graph = evalNodes(generateGraph().toMutableList())
 
-    printGraph(evalNodes(graph))
+    printGraph(graph)
+    printGraph(findShortestPath(graph, graph[0].from, graph.last().to))
 }
+
+fun findShortestPath(
+    graph: List<Path>,
+    from: Node,
+    to: Node,
+    pathToEnd: MutableSet<Path> = mutableSetOf(),
+): List<Path> {
+//TODO
+}
+
 
 fun generateGraph(): List<Path> {
     val nodes = mutableListOf<Node>()
@@ -16,11 +27,11 @@ fun generateGraph(): List<Path> {
         nodes.add(Node(i.toString(), "p"))
     }
     val graph = mutableListOf<Path>()
-    for (i in 0..nodes.size - 2) {
-        graph.add(Path(nodes[i], nodes[(0 until nodes.size - 1).random()], (1 until 10).random()))
+    for (i in 0 until nodes.size - 2) {
+        graph.add(Path(nodes[i], nodes[i + 1], (1 until 10).random()))
     }
     val finish = Node((lengthOfMap + 1).toString(), "f")
-    graph.add(Path(graph.last().from, finish, 1))
+    graph.add(Path(graph[(0 until graph.size).random()].from, finish, 1))
 
     return graph
 }
@@ -29,7 +40,7 @@ fun evalNodes(graph: MutableList<Path>): List<Path> {
     while (!wasEverythingVisited(graph)) {
         for (path in graph) {
             path.from.visitedAsSmallest = true
-            val neighbors = findNeighbors(path, graph)
+            val neighbors = findNeighbors(path.from, graph)
             if (path.from.shortestPathLength != Int.MAX_VALUE) {
                 for (neighbor in neighbors) {
                     if (neighbor.length + neighbor.from.shortestPathLength < neighbor.to.shortestPathLength) {
@@ -42,10 +53,10 @@ fun evalNodes(graph: MutableList<Path>): List<Path> {
     return graph
 }
 
-fun findNeighbors(searchingForPath: Path, paths: List<Path>): List<Path> {
+fun findNeighbors(searchingForNode: Node, paths: List<Path>): List<Path> {
     val output = mutableListOf<Path>()
     for (i in paths) {
-        if (searchingForPath.from == i.from) {
+        if (searchingForNode == i.from) {
             output.add(i)
         }
     }
