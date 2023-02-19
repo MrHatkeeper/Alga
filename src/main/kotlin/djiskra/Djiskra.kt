@@ -4,7 +4,10 @@ package djiskra
 fun main() {
     val graph = evalNodes(generateGraph().toMutableList())
 
+    println("Graf")
     printGraph(graph)
+    println("--------------------")
+    println("nejkratší cesta")
     printGraph(findShortestPath(graph, graph[0].from, graph.last().to))
 }
 
@@ -14,7 +17,21 @@ fun findShortestPath(
     to: Node,
     pathToEnd: MutableSet<Path> = mutableSetOf(),
 ): List<Path> {
-//TODO
+    val neighbors = findNeighbors(from, graph)
+    var smallestNeighbor = neighbors[0]
+
+    for (neighbor in neighbors) {
+        if (neighbor.to.type == to.type) {
+            pathToEnd.add(neighbor)
+            return pathToEnd.toList()
+        }
+        if (neighbor.to.shortestPathLength < smallestNeighbor.to.shortestPathLength) {
+            smallestNeighbor = neighbor
+        }
+    }
+    pathToEnd.add(smallestNeighbor)
+    return findShortestPath(graph,smallestNeighbor.to,to, pathToEnd)
+
 }
 
 
